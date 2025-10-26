@@ -29,6 +29,9 @@ INCLUDE := include
 # define lib directory
 LIB := lib
 
+# enable or disable parallel build (true/false)
+PARALLEL_BUILD := true
+
 ifeq ($(OS),Windows_NT)
 MAIN := main.exe
 SOURCEDIRS := $(SRC)
@@ -40,7 +43,7 @@ MD := mkdir
 else
 MAIN := main
 SOURCEDIRS := $(shell find $(SRC) -type d)
-INCLUDEDIRS := $(shell find $(INCLUDE) $(SRC) -type d)
+INCLUDEDIRS := $(shell find $(INCLUDE) -type d)
 LIBDIRS := $(shell find $(LIB) -type d)
 FIXPATH = $1
 RM = rm -f
@@ -70,7 +73,12 @@ DEPS := $(OBJECTS:.o=.d)
 
 OUTPUTMAIN := $(call FIXPATH,$(OUTPUT)/$(MAIN))
 
-all: $(BUILD) $(OUTPUT) $(OUTPUTMAIN)
+all: $(BUILD) $(OUTPUT)
+ifeq ($(PARALLEL_BUILD),true)
+	@$(MAKE) -j $(OUTPUTMAIN)
+else
+	@$(MAKE) $(OUTPUTMAIN)
+endif
 	@echo Executing 'all' complete!
 
 $(BUILD):
