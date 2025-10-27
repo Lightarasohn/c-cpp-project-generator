@@ -1,6 +1,7 @@
 #
-# 'make'        build executable file 'main'
+# 'make'        builds executable file 'main'
 # 'make clean'  removes all .o and executable files
+# 'make start'  builds executable file 'main' and executes it
 #
 
 # define the Cpp compiler to use
@@ -109,3 +110,15 @@ clean:
 run: all
 	./$(OUTPUTMAIN)
 	@echo Executing 'run: all' complete!
+
+# ---------------------------------------------------------------------
+# Start target: runs the built executable, building it first if needed
+# ---------------------------------------------------------------------
+.PHONY: start
+start:
+ifeq ($(wildcard $(OUTPUTMAIN)),)
+	@echo "Executable not found. Building first..."
+	@$(MAKE) all
+endif
+	@echo "Starting program..."
+	./$(OUTPUTMAIN)
